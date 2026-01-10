@@ -23,11 +23,12 @@ def task3():
         if notes[i] >meilleur_note:
             meilleur_note=notes[i]
             name=names[i]
+
     
     print('la meilleure c est ' ,meilleur_note, 'et c est a' ,name)
+
 def task4():
     gameOn=True
-task4()
     puzzle="5618"
     while gameOn:
         vache=0
@@ -43,5 +44,5 @@ task4()
             print("Well done. The number was", puzzle)
         else :
             print("toro: " + str(toro))
-
             print("vache: " + str(vache))
+task4()
