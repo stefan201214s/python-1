@@ -27,6 +27,7 @@ def task3():
     print('la meilleure c est ' ,meilleur_note, 'et c est a' ,name)
 def task4():
     gameOn=True
+task4()
     puzzle="5618"
     while gameOn:
         vache=0
@@ -42,4 +43,5 @@ def task4():
             print("Well done. The number was", puzzle)
         else :
             print("toro: " + str(toro))
+
             print("vache: " + str(vache))
