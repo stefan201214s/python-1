@@ -1,48 +1,30 @@
-def task1():
-    h=float(input("What is the height o fthe cone"))
-    r=float(input("What is the radius o fthe cone"))
-    p=1/3*3.14*h*r**2
-    print("Th evolume of the cone is", p, "units.")
+import pygame
+import os
+window = pygame.display.set_mode((900, 500))
 
-def task2():
-    a=10
-    b=20
-    #op1
-    a, b=b, a
-    #op2
-    temp=a
-    a=b
-    b=temp
+y_image = pygame.image.load(os.path.join("assets", "spaceship_yellow.png"   ))
+r_image = pygame.image.load(os.path.join("assets", "spaceship_red.png"   ))
+y_image_resize = pygame.transform.scale(y_image, (80, 60))
+r_image_resize = pygame.transform.scale(r_image, (80, 60))
+y_image_rotate = pygame.transform.rotate(y_image_resize, 90)
+r_image_rotate = pygame.transform.rotate(r_image_resize, 270)
+y_image = y_image_rotate
+r_image = r_image_rotate
+pygame.display.set_caption("Star Wars")
+def main():
+    clock = pygame.time.Clock()
+    run = True
+    while run:
+        clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+        window.fill((0, 0, 255))
+        red=pygame.rect(100, 250, 80, 60)
+        yellow=pygame.rect(800, 250, 80, 60)
+        window.blit(r_image, (yellow.x, yellow.y))
+        window.blit(y_image, (red.x, red.y))
+        pygame.display.update()
+    pygame.quit()
 
-def task3():
-    names=["stef", "armon" , "karampalasis" , "alex", "marcel"]
-    notes=[10, 18, 14, 5, 4]
-    names=""
-    meileur_notes=0
-    for i in range(len(notes)):
-        if notes[i] >meilleur_note:
-            meilleur_note=notes[i]
-            name=names[i]
-
-    
-    print('la meilleure c est ' ,meilleur_note, 'et c est a' ,name)
-
-def task4():
-    gameOn=True
-    puzzle="5618"
-    while gameOn:
-        vache=0
-        toro=0
-        ans=input("give me your answer")
-        for i in range(len(ans)):
-            if ans[i]== puzzle[i]:
-                toro+=1
-            elif ans[i] in puzzle:
-                vache+=1
-        if toro == 4:
-            gameOn=False
-            print("Well done. The number was", puzzle)
-        else :
-            print("toro: " + str(toro))
-            print("vache: " + str(vache))
-task4()
+main()
