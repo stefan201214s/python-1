@@ -2,6 +2,7 @@ import pygame
 import math
 import random
 pygame.init()
+selected_tower_obj = None
 
 # =========================
 # CONFIG
@@ -97,8 +98,33 @@ tower_types = {
         "damage": 70,
         "speed": 20,
         "color": BLACK
+    },
+
+    6: {
+        "cost": 700,
+        "range": 320,
+        "damage": 120,
+        "speed": 18,
+        "color": (0, 255, 255)  # cyan
+    },
+
+    7: {
+        "cost": 1200,
+        "range": 360,
+        "damage": 200,
+        "speed": 15,
+        "color": (255, 0, 255)  # violet
+    },
+
+    8: {
+        "cost": 2000,
+        "range": 420,
+        "damage": 350,
+        "speed": 12,
+        "color": (255, 140, 0)  # orange
     }
 }
+
 
 # =========================
 # CLASSES
@@ -264,7 +290,7 @@ class Bullet:
 class Tower:
 
     def __init__(self, x, y, tower_type):
-
+        self.level = 1
         self.x = x
         self.y = y
 
@@ -322,6 +348,14 @@ class Tower:
             18
         )
 
+    def upgrade(self):
+        self.level += 1
+
+        self.damage = int(self.damage * 1.5)
+        self.range = int(self.range * 1.2)
+
+        self.cooldown = max(10, self.speed - 5)
+
 # =========================
 # LISTES
 # =========================
@@ -362,7 +396,11 @@ while running:
 
         if event.type == pygame.QUIT:
             running = False
-
+        
+        # ======================
+        # CLAVIER
+        # ======================
+    
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_1:
@@ -379,29 +417,66 @@ while running:
 
             elif event.key == pygame.K_5:
                 selected_tower = 5
+            
+            elif event.key == pygame.K_6:
+                selected_tower = 6
+
+            elif event.key == pygame.K_7:
+                selected_tower = 7
+
+            elif event.key == pygame.K_8:
+                selected_tower = 8
+
+        # ======================
+        # SOURIS
+        # ======================
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-
             mx, my = pygame.mouse.get_pos()
 
-            # Placement
             if event.button == 1:
 
-                cost = tower_types[selected_tower]["cost"]
+                if selected_tower_obj:
 
-                if (
-                    money >= cost and
-                    len(towers) < MAX_TOWERS
-                ):
+                    # bouton upgrade (zone écran gauche)
+                    if 10 <= mx <= 200 and 200 <= my <= 250:
 
-                    towers.append(
-                        Tower(mx, my, selected_tower)
-                    )
+                        upgrade_cost = 100 * selected_tower_obj.level
 
-                    money -= cost
+                        if money >= upgrade_cost:
 
-            # Vente
-            if event.button == 3:
+                            money -= upgrade_cost
+                            selected_tower_obj.upgrade()
+
+                # ======================
+                # SELECTION TOUR
+                # ======================
+                selected_tower_obj = None
+
+                for tower in towers:
+                    dist = math.hypot(mx - tower.x, my - tower.y)
+
+                    if dist <= 20:
+                        selected_tower_obj = tower
+                        break
+
+                # Placement
+                if selected_tower and selected_tower_obj is None:
+
+                    cost = tower_types[selected_tower]["cost"]
+
+                    if (
+                        money >= cost and
+                        len(towers) < MAX_TOWERS
+                    ):
+
+                        towers.append(
+                            Tower(mx, my, selected_tower)
+                        )
+
+                        money -= cost
+
+            elif event.button == 3:
 
                 for tower in towers[:]:
 
@@ -557,7 +632,7 @@ while running:
 
     info_y = 50
 
-    for i in range(1, 6):
+    for i in tower_types:
 
         txt = font.render(
             f"{i} = Tour {i} ({tower_types[i]['cost']}$)",
@@ -597,11 +672,34 @@ while running:
             )
         )
 
-        pygame.display.flip()
+        if selected_tower_obj:
 
-        pygame.time.wait(3000)
+            pygame.draw.rect(screen, (30, 30, 30), (0, 40, 220, 200))
 
-        running = False
+            txt1 = font.render("TOUR SELECTIONNEE", True, WHITE)
+            screen.blit(txt1, (10, 50))
+
+            txt2 = font.render(f"Degats: {selected_tower_obj.damage}", True, WHITE)
+            screen.blit(txt2, (10, 80))
+
+            txt3 = font.render(f"Range: {selected_tower_obj.range}", True, WHITE)
+            screen.blit(txt3, (10, 110))
+
+            txt4 = font.render(f"Niveau: {selected_tower_obj.level}", True, WHITE)
+            screen.blit(txt4, (10, 140))
+
+            upgrade_cost = 100 * selected_tower_obj.level
+
+            txt5 = font.render(f"Upgrade: {upgrade_cost}$", True, YELLOW)
+            screen.blit(txt5, (10, 1700))
+
+    pygame.draw.rect(screen, BLUE, (10, 280, 180, 40))
+    txt6 = font.render("AMELIORER", True, WHITE)
+    screen.blit(txt6, (20, 210))
+
+    pygame.display.flip()
+
+    
 
     pygame.display.flip()
 
